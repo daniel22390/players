@@ -93,9 +93,9 @@ const Login = (props) => {
         setLoading(true)
         auth()
         .createUserWithEmailAndPassword(login, password)
-        .then(() => {
-            const user = database().ref('/users').push();
-            user.set({
+        .then((u) => {
+            database().ref('/users/' + u.user.uid)
+            .set({
                 name: name,
                 email: login
             })

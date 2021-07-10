@@ -12,6 +12,7 @@ const Home = (props) => {
     const [name, setName] = useState('');
 
     const onPressButton = () => {
+        setName('')
         auth()
             .signOut()
             .then(() => props.navigation.replace('Auth', { screen: 'Login' }));
@@ -19,16 +20,16 @@ const Home = (props) => {
 
     useEffect(() => {
         auth().onAuthStateChanged(async (user) => {
-            const data = await database().ref('users').orderByChild('email').equalTo(user.email).limitToFirst(1).once('value')
-            var user = data.val()[Object.keys(data.val())[0]]
-            setName(user.name)
+            const data = await database().ref('users/' + user.uid).once('value')
+            var user = data.val()
+            setName("Seja bem vindo " + user.name)
         })
     }, []);
 
     return (
         <LinearGradient colors={[primaryColor, '#060e21']} style={{ flex: 1 }}>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{color: "#fff", marginBottom: 20}}>Seja bem vindo {name}</Text>
+                <Text style={{color: "#fff", marginBottom: 20}}>{name}</Text>
                 <Button title={"Sair"} onPress={onPressButton}></Button>
             </View>
         </LinearGradient>
