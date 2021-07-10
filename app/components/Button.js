@@ -4,7 +4,8 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import {
     primaryColor,
     terciaryColor,
-    quartenaryColor
+    quartenaryColor,
+    style
 } from '../style/default'
 import Loading from "./Loading";
 
@@ -22,7 +23,7 @@ const CustomButton = (props) => {
                 loading ?
                 <Loading backgroundColor={{ backgroundColor: 'transparent' }} color={terciaryColor}></Loading>
                 :
-                <Text style={styles.buttonText}>{title}</Text>
+                <Text style={{...styles.buttonText, ...style.fontSizeMd}}>{title}</Text>
             }
         </TouchableOpacity>
     );
@@ -44,8 +45,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: terciaryColor,
-        textTransform: 'uppercase',
-        fontSize: 14
+        textTransform: 'uppercase'
     }
 });
 

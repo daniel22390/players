@@ -14,5 +14,8 @@ export const style = StyleSheet.create({
     fontSizeXL: {
         fontWeight: 'bold',
         fontSize: 19
+    },
+    fontSizeMd: {
+        fontSize: 14
     }
 })

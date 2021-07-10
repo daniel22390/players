@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StatusBar, KeyboardAvoidingView, StyleSheet, Image, View, TouchableWithoutFeedback, Keyboard, Platform } from 'react-native';
+import { SafeAreaView, StatusBar, KeyboardAvoidingView, StyleSheet, Image, View, TouchableWithoutFeedback, Keyboard, Platform, Text } from 'react-native';
 import {
     style,
-    primaryColor
+    primaryColor,
+    terciaryColor
 } from '../style/default'
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -18,22 +19,36 @@ import database from '@react-native-firebase/database';
 const Login = (props) => {
     const [login, setLogin] = useState('daniel22390@hotmail.com');
     const [password, setPassword] = useState('123456');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [name, setName] = useState('');
+    const [passwordConfirmation, setPasswordConfirmation] = useState('123456');
+    const [name, setName] = useState('Daniel');
     const [screen, setScreen] = useState('Login');
     const [loading, setLoading] = useState(false);
+    const [initializing, setInitializing] = useState(true);
+    const [definePass, setDefinePass] = useState(false)
     let verifyAuth = false
 
-    // const [user, setUser] = useState();
-    const [initializing, setInitializing] = useState(true);
-
     const onPressLink = () => {
-        screen == 'Login' ? setScreen('Cadastro') : setScreen('Login')
+        if(definePass)
+            setDefinePass(false)
+        else if(screen == 'Login')
+            setScreen('Cadastro') 
+        else
+            setScreen('Login')
+    }
+
+    const onPressLinkPass = () => {
+        setDefinePass(true)
     }
 
     const onPressButton = () => {
-        if(!loading)
-            screen == 'Login' ? signIn() : register()
+        if(!loading){
+            if(definePass)
+                forgotPass()
+            else if(screen == 'Login')
+                signIn()
+            else
+                register()
+        }
     }
 
     const onAuthStateChanged = (user) => {
@@ -42,6 +57,34 @@ const Login = (props) => {
             verifyAuth = true
             props.navigation.replace('Root')
         }
+    }
+
+    const forgotPass = () => {
+        if(login == ''){
+            showMessageCustom("Email inválido!", "Email não pode estar em branco!")
+            return;
+        }
+
+        setLoading(true)
+        auth().sendPasswordResetEmail(login)
+        .then(() => {
+            setDefinePass(false)
+            showMessageCustom("Email enviado com sucesso!", "Um email foi enviado para você redefinir sua senha")
+        })
+        .catch((error) => {
+            if (error.code === 'auth/user-not-found') {
+                showMessageCustom("Email não encontrado!", "Conta com o email digitado não encontrado!")
+            }
+            else if (error.code === 'auth/invalid-email') {
+                showMessageCustom("Email inválido!", "O email foi digitado errado!")
+            }
+            else{
+                showMessageCustom("Erro!", "Erro ao enviar solicitação!")
+            }
+        })
+        .finally(() => {
+            setLoading(false)
+        });
     }
 
     useEffect(() => {
@@ -94,17 +137,22 @@ const Login = (props) => {
         auth()
         .createUserWithEmailAndPassword(login, password)
         .then((u) => {
-            database().ref('/users/' + u.user.uid)
-            .set({
-                name: name,
-                email: login
-            })
-            .then(() => {})
-            .catch((e) => {
-                showMessageCustom("Erro ao cadastrar usuário!", "Ocorreu um erro ao cadastrar o usuário!")
+            auth().currentUser.updateProfile({
+                displayName: name.split(' ')[0]
             })
             .finally(() => {
-                setLoading(false)
+                database().ref('/users/' + u.user.uid)
+                .set({
+                    name: name,
+                    email: login
+                })
+                .then(() => {})
+                .catch((e) => {
+                    showMessageCustom("Erro ao cadastrar usuário!", "Ocorreu um erro ao cadastrar o usuário!")
+                })
+                .finally(() => {
+                    setLoading(false)
+                })
             })
         })
         .catch(error => {
@@ -146,6 +194,14 @@ const Login = (props) => {
                                     source={require('../assets/logo.png')}
                                 />
                                 {
+                                    definePass &&
+                                    <View style={styles.fields} >
+                                        <Text style={[style.fontSizeMd, {color: terciaryColor, textAlign: 'center'} ]}>
+                                            Digite sua senha e enviaremos um email para você redefinir sua senha
+                                        </Text>
+                                    </View>
+                                }
+                                {
                                     screen == "Cadastro" &&
                                     <View style={styles.fields} >
                                         <Input placeholder="Nome" icon="user" value={name} onChangeText={(val) => setName(val)}></Input>
@@ -154,9 +210,12 @@ const Login = (props) => {
                                 <View style={styles.fields} >
                                     <Input placeholder="Email" type="email"  icon="envelope-o" value={login} onChangeText={(val) => setLogin(val)}></Input>
                                 </View>
-                                <View style={styles.fields}>
-                                    <Input placeholder="Senha" type="password" icon="lock" value={password}  onChangeText={(val) => setPassword(val)}></Input>
-                                </View>
+                                {
+                                    !definePass && 
+                                    <View style={styles.fields}>
+                                        <Input placeholder="Senha" type="password" icon="lock" value={password}  onChangeText={(val) => setPassword(val)}></Input>
+                                    </View>
+                                }
                                 {
                                     screen == "Cadastro" &&
                                     <View style={styles.fields} >
@@ -164,15 +223,15 @@ const Login = (props) => {
                                     </View>
                                 }
                                 <View style={styles.button}>
-                                    <Button title={screen == "Login" ? "Entrar" : "Cadastrar"} onPress={onPressButton} loading={loading}></Button>
+                                    <Button title={screen == "Login" ? (definePass ? "Enviar Email" : "Entrar") : "Cadastrar"} onPress={onPressButton} loading={loading}></Button>
                                 </View>
                                 <View style={styles.button}>
-                                    <Link title={screen == "Login" ? "Cadastre-se" : "Login"} onPress={onPressLink}></Link>
+                                    <Link title={screen == "Login" && !definePass ? "Cadastre-se" : "Login"} onPress={onPressLink}></Link>
                                 </View>
                                 {
-                                    screen == "Login" &&
+                                    screen == "Login" && !definePass &&
                                     <View style={styles.button}>
-                                        <Link title="Esqueci minha Senha" onPress={() => {}}></Link>
+                                        <Link title="Esqueci minha Senha" onPress={onPressLinkPass}></Link>
                                     </View>
                                 }
                             </Card>

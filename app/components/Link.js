@@ -4,7 +4,8 @@ import { StyleSheet, TouchableOpacity, Text } from "react-native";
 import {
     primaryColor,
     terciaryColor,
-    quartenaryColor
+    quartenaryColor,
+    style
 } from '../style/default'
 
 const CustomButton = (props) => {
@@ -16,7 +17,7 @@ const CustomButton = (props) => {
 
     return (
         <TouchableOpacity onPress={onPress}>
-            <Text style={styles.buttonText}>{title}</Text>
+            <Text style={{...styles.buttonText, ...style.fontSizeMd}}>{title}</Text>
         </TouchableOpacity>
     );
 };
@@ -24,7 +25,6 @@ const CustomButton = (props) => {
 const styles = StyleSheet.create({
     buttonText: {
         color: terciaryColor,
-        fontSize: 14,
         textAlign: 'center'
     }
 });
