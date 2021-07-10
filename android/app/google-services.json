@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "278906518829",
+    "project_id": "player-d88d7",
+    "storage_bucket": "player-d88d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278906518829:android:7d83ac5a5c930afd90a7a4",
+        "android_client_info": {
+          "package_name": "com.player"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "278906518829-850ohrq8pi84aciq7rho72n61230i3kk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVpCofoIbJ-5lkRsy-BG8wc7VhrEqZjwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "278906518829-850ohrq8pi84aciq7rho72n61230i3kk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
