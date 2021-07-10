@@ -13,6 +13,7 @@ import Link from '../components/Link'
 import {showMessageCustom} from '../components/Notification'
 
 import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
 const Login = (props) => {
     const [login, setLogin] = useState('daniel22390@hotmail.com');
@@ -21,7 +22,9 @@ const Login = (props) => {
     const [name, setName] = useState('');
     const [screen, setScreen] = useState('Login');
     const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState();
+    let verifyAuth = false
+
+    // const [user, setUser] = useState();
     const [initializing, setInitializing] = useState(true);
 
     const onPressLink = () => {
@@ -35,17 +38,19 @@ const Login = (props) => {
 
     const onAuthStateChanged = (user) => {
         if (initializing) setInitializing(false);
-        if(user){
-            setLoading(true)
-            setUser(user);
-            setLoading(false)
-            props.navigation.replace('Root', { screen: 'Home' })
+        if(user && !verifyAuth){
+            verifyAuth = true
+            props.navigation.replace('Root')
         }
     }
 
     useEffect(() => {
-        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-        return subscriber; // unsubscribe on unmount
+        try{
+            let subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+            return subscriber; // unsubscribe on unmount
+        } catch(e){
+            setInitializing(false)
+        }
     }, []);
 
     const signIn = () => {
@@ -53,7 +58,6 @@ const Login = (props) => {
             setLoading(true)
             auth().signInWithEmailAndPassword(login, password)
             .then(() => {
-                props.navigation.replace('Root', { screen: 'Home' })
             })
             .catch(error => {
                 showMessageCustom("Credenciais inválidas!", "Email e senha inválidos!")
@@ -90,7 +94,18 @@ const Login = (props) => {
         auth()
         .createUserWithEmailAndPassword(login, password)
         .then(() => {
-            showMessageCustom("Usuário Cadastrado!", "Usuário Cadastrado com sucesso!")
+            const user = database().ref('/users').push();
+            user.set({
+                name: name,
+                email: login
+            })
+            .then(() => {})
+            .catch((e) => {
+                showMessageCustom("Erro ao cadastrar usuário!", "Ocorreu um erro ao cadastrar o usuário!")
+            })
+            .finally(() => {
+                setLoading(false)
+            })
         })
         .catch(error => {
             if (error.code === 'auth/email-already-in-use') {
@@ -104,12 +119,10 @@ const Login = (props) => {
             if (error.code === 'auth/weak-password') {
                 showMessageCustom("Senha inválida!", "Senha deve ter no mínimo 6 caracteres!")
             }
+            setLoading(false)
 
             console.error(error.code);
         })
-        .finally(() => {
-            setLoading(false)
-        });
     }
 
     if (initializing) return <LinearGradient colors={[primaryColor, '#060e21']} style={{ flex: 1 }}></LinearGradient>;
