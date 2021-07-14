@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StatusBar, KeyboardAvoidingView, StyleSheet, Image, View, TouchableWithoutFeedback, Keyboard, Platform, Text } from 'react-native';
+import { SafeAreaView, StatusBar, KeyboardAvoidingView, StyleSheet, View, TouchableWithoutFeedback, Keyboard, Platform, Text } from 'react-native';
 import {
     style,
     primaryColor,
@@ -11,6 +11,7 @@ import Card from '../components/Card'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import Link from '../components/Link'
+import Image from '../components/Image'
 import {showMessageCustom} from '../components/Notification'
 
 import auth from '@react-native-firebase/auth';
@@ -187,10 +188,7 @@ const Login = (props) => {
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                             <Card style={styles.card}>
                                 <Image
-                                    style={{
-                                        height: 40,
-                                        resizeMode: 'contain'
-                                    }}
+                                    size={40}
                                     source={require('../assets/logo.png')}
                                 />
                                 {

@@ -18,7 +18,7 @@ const BottomTabNavigator = (props) => {
     const { style } = props;
     return (
         <LinearGradient colors={[primaryColor, '#060e21']} style={{ flex: 1 }}>
-            <StatusBar backgroundColor={primaryColor} barStyle={"light-content"} animated={false}></StatusBar>
+            <StatusBar backgroundColor={"#060e21"} barStyle={"light-content"} animated={false}></StatusBar>
             <SafeAreaView style={[{ flex: 1 }]} edges={['bottom']}>
 
                 <Tab.Navigator

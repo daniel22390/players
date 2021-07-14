@@ -1,6 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { navigatorOptions } from "./NavigationOptions";
+import { HeaderNavigation, HeaderBack } from './HeaderNavigation';
 
 const Stack = createStackNavigator();
 
@@ -12,7 +13,8 @@ export const HomeNavigator = (props) => {
             <Stack.Screen name="Home" component={Home}
                 options={{
                     headerTitle: '',
-                    headerShown: false
+                    headerLeft: () => <HeaderBack navigation={navigation} />,
+                    header: ({ scene, previous, navigation }) => <HeaderNavigation scene={scene} previous={previous} navigation={navigation} />
                 }} />
         </Stack.Navigator>
     );
